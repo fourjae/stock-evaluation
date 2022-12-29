@@ -13,6 +13,17 @@ public class AuthController {
     }
 
     /**
+     * 사용자로부터 인가코드를 받아 카카오 서버로부터 유저 정보를 받고 AccessToken 발행
+     * @return 로그인 성공 유무 및 accessToken(JWT)
+     */
+    @GetMapping("/kakao/callback")
+    public KakaoLoginResponse kakaoOauth(@RequestParam("code") String code)  {
+        String accessToken = authService.getKakaoOauthToken(code);
+        return new KakaoLoginResponse(true, accessToken);
+    }
+
+
+    /**
      * 애플 유저 로그인 후 정보 받기
      * @return 로그인 성공 유무 및 accessToken(JWT)
      */
