@@ -1,1 +1,15 @@
-
+## [그림 1.8] Team ID 값 입력
+#APPLE.TEAM.ID=[Team ID]
+## [그림 2.5] Return URLs 값 입력
+#APPLE.WEBSITE.URL=[Website URLs]
+## [그림 2.6] Identifier 값 입력
+#APPLE.AUD=[Client ID]
+## [그림 3.5] Key ID 값 입력
+#APPLE.KEY.ID=[Key ID]d
+## [그림 3.5]에서 다운로드 받은 Private Key 파일을 해당 위치로 이동 후, 파일명 입력
+#APPLE.KEY.PATH=static/AuthKey_[KeyID].p8
+# application.yml
+spring:
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
