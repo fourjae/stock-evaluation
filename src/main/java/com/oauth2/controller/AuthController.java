@@ -1,13 +1,8 @@
 package com.oauth2.controller;
 
 import com.oauth2.dto.KakaoLoginResponse;
-import com.oauth2.model.AppleResponse;
 import com.oauth2.service.OauthService;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

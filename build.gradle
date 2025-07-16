@@ -8,9 +8,8 @@ group = 'com.oauth2'
 version = '0.0.1-SNAPSHOT'
 
 java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(21)
-	}
+	sourceCompatibility = '21'
+	targetCompatibility = '21'
 }
 
 repositories {
@@ -18,12 +17,38 @@ repositories {
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+	/* ──────────────── Core / Web ──────────────── */
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-	compileOnly 'org.projectlombok:lombok:1.18.32'
-	runtimeOnly 'com.mysql:mysql-connector-j'
-	annotationProcessor 'org.projectlombok:lombok'
+
+	/* ──────────────── Data Layer ──────────────── */
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	runtimeOnly   'com.mysql:mysql-connector-j'         // JDBC driver만 런타임 필요
+
+	/* ──────────────── Reactive / WebClient ──────────────── */
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'   // ★ WebClient 포함
+
+	/* ─────────── Spring Security 핵심 ──────────── */
+	implementation 'org.springframework.boot:spring-boot-starter-security'            // 기본 WebSecurity
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'       // OAuth2 Login (Google·Kakao 등)
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server' // JWT 검증·리소스 서버
+
+	/* ─────────────── 웹/JSON 등 기타─────────────── */
+	implementation 'org.springframework.boot:spring-boot-starter-web'                 // REST API
+
+	/* ────────────────── 개발 편의 ────────────────── */
+	compileOnly         'org.projectlombok:lombok:1.18.32'
+	annotationProcessor 'org.projectlombok:lombok:1.18.32'
+
+	/* ─────────────────── 테스트 ─────────────────── */
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.security:spring-security-test'             // MockMvc + Security
+
+	/* ────────── (선택) JWT 직접 발급 시 ────────── */
+	 implementation 'io.jsonwebtoken:jjwt-api:0.12.5'
+	 runtimeOnly    'io.jsonwebtoken:jjwt-impl:0.12.5', 'io.jsonwebtoken:jjwt-jackson:0.12.5'
+
+
 }
 
 tasks.named('test') {
