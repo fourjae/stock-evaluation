@@ -1,5 +1,6 @@
 package com.oauth2.config;
 
+import com.oauth2.properties.JwtProperties;
 import com.oauth2.security.oauth2.jwt.JwtTokenProvider;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;

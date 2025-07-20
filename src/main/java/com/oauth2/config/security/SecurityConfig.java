@@ -3,21 +3,37 @@ package com.oauth2.config.security;
 import com.oauth2.security.oauth2.CustomOAuth2UserService;
 import com.oauth2.security.oauth2.OAuth2AuthenticationSuccessHandler;
 import com.oauth2.security.oauth2.jwt.JwtTokenProvider;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.*;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.SessionManagementConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.config.oauth2.client.CommonOAuth2Provider;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.*;
 import org.springframework.security.oauth2.client.registration.*;
+import org.springframework.security.oauth2.client.web.reactive.function.client.ServletOAuth2AuthorizedClientExchangeFilterFunction;
 import org.springframework.security.oauth2.core.*;
 
+import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.reactive.function.client.WebClient;
+
+import java.security.SignatureException;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -32,8 +48,9 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        http.csrf(csrf -> csrf.disable())
+        http.csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+//                .sessionManagement(SessionManagementConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/login/**", "/css/**", "/js/**").permitAll()
                         .anyRequest().authenticated()
@@ -50,40 +67,40 @@ public class SecurityConfig {
     }
 
 
-    /* ─────────────── ② Kakao + Google 등록 ─────────────── */
-    @Bean
-    public ClientRegistrationRepository clientRegistrations(OAuth2ClientProperties props) {
-
-        // Kakao
-        var kr = props.getRegistration().get("kakao");
-        var kp = props.getProvider()    .get("kakao");
-
-        ClientRegistration kakao = ClientRegistration
-                .withRegistrationId("kakao")
-                .clientId(kr.getClientId())
-                .clientSecret(kr.getClientSecret())
-                .clientAuthenticationMethod(
-                        new ClientAuthenticationMethod(kr.getClientAuthenticationMethod()))
-                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-                .redirectUri(kr.getRedirectUri())
-                .scope(kr.getScope())
-                .authorizationUri(kp.getAuthorizationUri())
-                .tokenUri(kp.getTokenUri())
-                .userInfoUri(kp.getUserInfoUri())
-                .userNameAttributeName(kp.getUserNameAttribute())
-                .build();
-
-        // Google (Spring 내장 빌더)
-        var gr = props.getRegistration().get("google");
-        ClientRegistration google = CommonOAuth2Provider.GOOGLE.getBuilder("google")
-                .clientId(gr.getClientId())
-                .clientSecret(gr.getClientSecret())
-                .scope(gr.getScope())
-                .redirectUri(gr.getRedirectUri())
-                .build();
-
-        return new InMemoryClientRegistrationRepository(kakao, google);
-    }
+//    /* ─────────────── ② Kakao + Google 등록 ─────────────── */
+//    @Bean
+//    public ClientRegistrationRepository clientRegistrations(OAuth2ClientProperties props) {
+//
+//        // Kakao
+//        var kr = props.getRegistration().get("kakao");
+//        var kp = props.getProvider()    .get("kakao");
+//
+//        ClientRegistration kakao = ClientRegistration
+//                .withRegistrationId("kakao")
+//                .clientId(kr.getClientId())
+//                .clientSecret(kr.getClientSecret())
+//                .clientAuthenticationMethod(
+//                        new ClientAuthenticationMethod(kr.getClientAuthenticationMethod()))
+//                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+//                .redirectUri(kr.getRedirectUri())
+//                .scope(kr.getScope())
+//                .authorizationUri(kp.getAuthorizationUri())
+//                .tokenUri(kp.getTokenUri())
+//                .userInfoUri(kp.getUserInfoUri())
+//                .userNameAttributeName(kp.getUserNameAttribute())
+//                .build();
+//
+//        // Google (Spring 내장 빌더)
+//        var gr = props.getRegistration().get("google");
+//        ClientRegistration google = CommonOAuth2Provider.GOOGLE.getBuilder("google")
+//                .clientId(gr.getClientId())
+//                .clientSecret(gr.getClientSecret())
+//                .scope(gr.getScope())
+//                .redirectUri(gr.getRedirectUri())
+//                .build();
+//
+//        return new InMemoryClientRegistrationRepository(kakao, google);
+//    }
 
     /* ─────────────── ③ WebClient – Kakao 호출용(선택) ─────────────── */
     @Bean
@@ -102,9 +119,9 @@ public class SecurityConfig {
                 .build();
     }
 
-
     @Bean
     public PasswordEncoder passwordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
+
 }

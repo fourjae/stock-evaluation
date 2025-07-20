@@ -28,13 +28,14 @@ dependencies {
 	/* ──────────────── Reactive / WebClient ──────────────── */
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'   // ★ WebClient 포함
 
-	/* ─────────── Spring Security 핵심 ──────────── */
+	/* ─────────── Spring Security & OAuth2 핵심 ──────────── */
 	implementation 'org.springframework.boot:spring-boot-starter-security'            // 기본 WebSecurity
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'       // OAuth2 Login (Google·Kakao 등)
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server' // JWT 검증·리소스 서버
 
 	/* ─────────────── 웹/JSON 등 기타─────────────── */
 	implementation 'org.springframework.boot:spring-boot-starter-web'                 // REST API
+	implementation 'org.springframework.boot:spring-boot-starter-validation'		  // 유효성 검사
 
 	/* ────────────────── 개발 편의 ────────────────── */
 	compileOnly         'org.projectlombok:lombok:1.18.32'
@@ -47,6 +48,9 @@ dependencies {
 	/* ────────── (선택) JWT 직접 발급 시 ────────── */
 	 implementation 'io.jsonwebtoken:jjwt-api:0.12.5'
 	 runtimeOnly    'io.jsonwebtoken:jjwt-impl:0.12.5', 'io.jsonwebtoken:jjwt-jackson:0.12.5'
+
+
+
 
 
 }

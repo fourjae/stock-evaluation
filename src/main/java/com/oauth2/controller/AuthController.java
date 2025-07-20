@@ -16,11 +16,11 @@ public class AuthController {
      */
     @GetMapping("/kakao/callback")
     public KakaoLoginResponse kakaoOauth(@RequestParam("code") String code)  {
-        String accessToken = oauthService.getKakaoOauthToken(code);
+//        String accessToken = oauthService.getKakaoOauthToken(code);
 
         return KakaoLoginResponse.builder()
                 .successYn(true)
-                .accessToken(accessToken)
+                .accessToken("accessToken")
                 .build();
     }
 

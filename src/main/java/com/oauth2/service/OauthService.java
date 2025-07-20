@@ -1,10 +1,7 @@
 package com.oauth2.service;
 
-import com.oauth2.security.AppleResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 
 /**
  * Oauth2에 대한 로그인을 담당하는 서비스
@@ -12,13 +9,12 @@ import org.springframework.util.MultiValueMap;
 @Service
 @Transactional
 public class OauthService {
-
-    public boolean isAppleLoginData(AppleResponse appleResponse) {
-        if (appleResponse == null) {
-            return false;
-        }
-        return true;
-    }
+//    public boolean isAppleLoginData(AppleResponse appleResponse) {
+//        if (appleResponse == null) {
+//            return false;
+//        }
+//        return true;
+//    }
 
 //    /**
 //     **

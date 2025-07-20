@@ -1,8 +1,10 @@
 package com.oauth2.security.oauth2;
 
+import com.oauth2.security.oauth2.jwt.JwtTokenProvider;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccessHandler {
@@ -22,6 +25,7 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
                                         HttpServletResponse response,
                                         Authentication authentication) throws IOException {
 
+        log.info("✅ OAuth2AuthenticationSuccessHandler onAuthenticationSuccess : {}", authentication.getName());
         DefaultOAuth2User oauthUser = (DefaultOAuth2User) authentication.getPrincipal();
         String jwt = jwtTokenProvider.createToken(oauthUser.getName(), oauthUser.getAuthorities());
 
