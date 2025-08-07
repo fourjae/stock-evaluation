@@ -12,6 +12,23 @@ java {
 	targetCompatibility = '21'
 }
 
+ext {
+	qdslVersion = '7.0'        // OpenFeign Querydsl 최신
+}
+
+dependencyManagement {
+	imports {
+		mavenBom "io.github.openfeign.querydsl:querydsl-bom:${qdslVersion}"   // 모든 모듈 버전 통일
+	}
+}
+
+tasks.withType(JavaCompile).configureEach {
+	options.incremental = true
+}
+
+sourceSets.main.java.srcDir "$buildDir/generated/sources/annotationProcessor/java/main"
+
+
 repositories {
 	mavenCentral()
 }
@@ -24,6 +41,9 @@ dependencies {
 	/* ──────────────── Data Layer ──────────────── */
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	runtimeOnly   'com.mysql:mysql-connector-j'         // JDBC driver만 런타임 필요
+
+	implementation "io.github.openfeign.querydsl:querydsl-jpa"               // QueryDSL 런타임
+	annotationProcessor("io.github.openfeign.querydsl:querydsl-apt:${qdslVersion}:jakarta") // Q 클래스 생성
 
 	/* ──────────────── Reactive / WebClient ──────────────── */
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'   // ★ WebClient 포함
