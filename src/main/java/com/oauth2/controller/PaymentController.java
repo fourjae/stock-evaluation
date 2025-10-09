@@ -1,5 +1,6 @@
 package com.oauth2.controller;
 
+import com.oauth2.dto.ApiResponse;
 import com.oauth2.dto.request.payment.PaymentCommand;
 import com.oauth2.dto.response.PaymentResponse;
 import com.oauth2.service.PaymentService;
@@ -19,12 +20,12 @@ public class PaymentController {
      * 결제 생성 & 실행
      */
     @PostMapping("")
-    public PaymentResponse executePayment(
+    public ApiResponse<PaymentResponse> executePayment(
             @RequestHeader(value = "Idempotency-Key", required = false) String idemKey,
             @Valid @RequestBody PaymentCommand request
     ) {
-        paymentService.exe();
-        return new PaymentResponse();
+        PaymentResponse paymentResponse = paymentService.executePayment();
+        return ApiResponse.ok(paymentResponse);
     }
 
 //    /**
