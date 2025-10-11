@@ -1,9 +1,9 @@
-package com.oauth2.controller;
+package com.oauth2.payment.domain.presentation;
 
 import com.oauth2.dto.ApiResponse;
 import com.oauth2.dto.request.payment.PaymentCommand;
 import com.oauth2.dto.response.PaymentResponse;
-import com.oauth2.service.PaymentService;
+import com.oauth2.payment.domain.application.PaymentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
