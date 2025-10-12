@@ -4,13 +4,14 @@ import com.oauth2.dto.ApiResponse;
 import com.oauth2.dto.request.payment.PaymentCommand;
 import com.oauth2.dto.response.PaymentResponse;
 import com.oauth2.payment.domain.application.PaymentService;
+import com.oauth2.payment.domain.presentation.dto.ChargePaymentRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 
 @RestController
-@RequestMapping("/v1/payment")
+@RequestMapping("/v1/payments")
 @RequiredArgsConstructor
 public class PaymentController {
 
@@ -22,9 +23,9 @@ public class PaymentController {
     @PostMapping("")
     public ApiResponse<PaymentResponse> executePayment(
             @RequestHeader(value = "Idempotency-Key", required = false) String idemKey,
-            @Valid @RequestBody PaymentCommand request
+            @Valid @RequestBody ChargePaymentRequest req
     ) {
-        PaymentResponse paymentResponse = paymentService.executePayment();
+        PaymentResponse paymentResponse = paymentService.executePayment(req.toCommand(idemKey));
         return ApiResponse.ok(paymentResponse);
     }
 

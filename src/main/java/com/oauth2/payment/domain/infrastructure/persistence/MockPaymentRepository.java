@@ -1,10 +1,9 @@
-package com.oauth2.payment.domain.infrastructure;
+package com.oauth2.payment.domain.infrastructure.persistence;
 
-import com.oauth2.payment.domain.port.out.PaymentGateway;
 import com.oauth2.payment.domain.port.out.PaymentRepositoryPort;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
-@Component
+@Repository
 public class MockPaymentRepository implements PaymentRepositoryPort {
 
     public void charge() {
