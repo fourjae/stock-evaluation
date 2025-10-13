@@ -1,11 +1,9 @@
 package com.oauth2.payment.domain.application;
 
-import com.oauth2.constants.payment.PaymentStatus;
 import com.oauth2.dto.response.PaymentResponse;
 import com.oauth2.payment.domain.application.dto.ChargePaymentCommand;
 import com.oauth2.payment.domain.port.out.PaymentGateway;
 import com.oauth2.payment.domain.port.out.PaymentRepositoryPort;
-import com.oauth2.payment.domain.port.out.dto.GatewayChargeRequest;
 import com.oauth2.payment.domain.port.out.dto.GatewayChargeResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
