@@ -1,5 +1,6 @@
 package com.oauth2.payment.domain.application.dto;
 
+import com.oauth2.payment.domain.Payment;
 import com.oauth2.payment.domain.port.out.dto.GatewayChargeRequest;
 import lombok.Builder;
 
@@ -24,5 +25,15 @@ public record ChargePaymentCommand(
                 .paymentMethodId(paymentMethodId)
                 .metadata(metadata)
                 .build();
+    }
+
+    public Payment toPaymentDraft() {
+        return Payment.builder()
+                      .amount(amount)
+                      .currency(currency)
+                      .customerId(customerId)
+                      .methodId(paymentMethodId)
+                      .status(PaymentStatus.PENDING)
+                      .build();
     }
 }
