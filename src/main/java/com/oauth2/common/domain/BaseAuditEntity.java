@@ -18,13 +18,13 @@ public abstract class BaseAuditEntity {
     protected void onCreate() {
         this.createdAt = OffsetDateTime.now();
         this.updatedAt = this.createdAt;
-        this.createdBy = AuditContext.getCurrentUserId(); // 임시: 나중에 구현
+//        this.createdBy = AuditContext.getCurrentUserId(); // 임시: 나중에 구현
         this.updatedBy = this.createdBy;
     }
 
     @PreUpdate
     protected void onUpdate() {
         this.updatedAt = OffsetDateTime.now();
-        this.updatedBy = AuditContext.getCurrentUserId();
+//        this.updatedBy = AuditContext.getCurrentUserId();
     }
 }

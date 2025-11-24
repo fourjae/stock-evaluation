@@ -20,7 +20,7 @@ public class PaymentController {
     /**
      * 결제 생성 & 실행
      */
-    @PostMapping("")
+    @PostMapping
     public ApiResponse<PaymentResponse> executePayment(
             @RequestHeader(value = "Idempotency-Key", required = false) String idemKey,
             @Valid @RequestBody ChargePaymentRequest req

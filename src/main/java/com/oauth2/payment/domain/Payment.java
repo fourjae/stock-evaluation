@@ -1,7 +1,6 @@
 package com.oauth2.payment.domain;
 
 import com.oauth2.constants.payment.PaymentStatus;
-import com.oauth2.payment.domain.application.dto.ChargePaymentCommand;
 import com.oauth2.payment.domain.port.out.dto.GatewayChargeResult;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -35,7 +34,7 @@ public class Payment {
     @Column(nullable=false,length=3)
     private String currency;
     @Enumerated(EnumType.STRING)
-    private PaymentStatus status;
+    private PaymentStatus paymentStatus;
     private String customerId;
     private String methodId;
     private String failureCode;
@@ -49,20 +48,20 @@ public class Payment {
 
 
     public void applyGatewayResult(GatewayChargeResult gw) {
-        if (this.status != PaymentStatus.PENDING) {
-            throw new IllegalStateException("PENDING 상태에서만 결제 결과를 반영할 수 있습니다. current=" + status);
+        if (this.paymentStatus != PaymentStatus.PENDING) {
+            throw new IllegalStateException("PENDING 상태에서만 결제 결과를 반영할 수 있습니다. current=" + paymentStatus);
         }
 
         this.gatewayPaymentId = gw.gatewayPaymentId();
-        this.status = gw.status();      // 필요 없으면 제거
+        this.paymentStatus = gw.paymentStatus();      // 필요 없으면 제거
         this.failureCode = gw.failureCode();
         this.failureMessage = gw.failureMessage();
 
         if (gw.succeeded()) {
-            this.status = PaymentStatus.SUCCEEDED;
+            this.paymentStatus = PaymentStatus.SUCCEEDED;
             this.paidAt = OffsetDateTime.now();
         } else {
-            this.status = PaymentStatus.FAILED;
+            this.paymentStatus = PaymentStatus.FAILED;
         }
     }
 

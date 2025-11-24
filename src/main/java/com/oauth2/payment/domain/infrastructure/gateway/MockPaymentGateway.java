@@ -9,6 +9,9 @@ import java.math.BigDecimal;
 import java.util.Map;
 import java.util.UUID;
 
+import static com.oauth2.constants.payment.PaymentStatus.FAILED;
+import static com.oauth2.constants.payment.PaymentStatus.SUCCEEDED;
+
 @Component
 public class MockPaymentGateway implements PaymentGateway {
     public GatewayChargeResult charge(GatewayChargeRequest req) {
@@ -17,7 +20,7 @@ public class MockPaymentGateway implements PaymentGateway {
             return GatewayChargeResult.builder()
                     .succeeded(false)
                     .gatewayPaymentId(null)
-                    .status("FAILED")
+                    .paymentStatus(FAILED)
                     .failureCode("MOCK_DECLINED")
                     .failureMessage("테스트 거절 (amount==0)")
                     .raw(Map.of("rule", "amount==0", "idemKey", req.idempotencyKey()))
@@ -29,7 +32,7 @@ public class MockPaymentGateway implements PaymentGateway {
         return GatewayChargeResult.builder()
                 .succeeded(true)
                 .gatewayPaymentId(pid)
-                .status("SUCCEEDED")
+                .paymentStatus(SUCCEEDED)
                 .failureCode(null)
                 .failureMessage(null)
                 .raw(Map.of("idemKey", req.idempotencyKey(), "methodId", req.paymentMethodId()))

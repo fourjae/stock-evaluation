@@ -34,7 +34,7 @@ public record ChargePaymentCommand(
                       .currency(currency)
                       .customerId(customerId)
                       .methodId(paymentMethodId)
-                      .status(PaymentStatus.PENDING)
+                      .paymentStatus(PaymentStatus.PENDING)
                       .build();
     }
 }
