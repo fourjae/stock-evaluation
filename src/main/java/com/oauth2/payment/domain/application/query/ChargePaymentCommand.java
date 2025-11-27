@@ -1,4 +1,4 @@
-package com.oauth2.payment.domain.application.dto;
+package com.oauth2.payment.domain.application.query;
 
 import com.oauth2.constants.payment.PaymentStatus;
 import com.oauth2.payment.domain.Payment;

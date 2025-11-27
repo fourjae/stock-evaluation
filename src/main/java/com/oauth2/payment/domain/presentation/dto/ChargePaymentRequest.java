@@ -1,7 +1,6 @@
 package com.oauth2.payment.domain.presentation.dto;
 
-import com.oauth2.payment.domain.application.dto.ChargePaymentCommand;
-import jakarta.validation.constraints.DecimalMin;
+import com.oauth2.payment.domain.application.query.ChargePaymentCommand;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 

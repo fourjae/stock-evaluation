@@ -2,7 +2,7 @@ package com.oauth2.payment.domain.application;
 
 import com.oauth2.dto.response.PaymentResponse;
 import com.oauth2.payment.domain.Payment;
-import com.oauth2.payment.domain.application.dto.ChargePaymentCommand;
+import com.oauth2.payment.domain.application.query.ChargePaymentCommand;
 import com.oauth2.payment.domain.port.out.PaymentGateway;
 import com.oauth2.payment.domain.port.out.PaymentRepositoryPort;
 import com.oauth2.payment.domain.port.out.dto.GatewayChargeResult;

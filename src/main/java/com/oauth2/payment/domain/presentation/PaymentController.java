@@ -5,9 +5,12 @@ import com.oauth2.dto.request.payment.PaymentCommand;
 import com.oauth2.dto.response.PaymentResponse;
 import com.oauth2.payment.domain.application.PaymentService;
 import com.oauth2.payment.domain.presentation.dto.ChargePaymentRequest;
+import com.oauth2.payment.domain.presentation.dto.PaymentSearchRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @RestController
@@ -29,16 +32,27 @@ public class PaymentController {
         return ApiResponse.ok(paymentResponse);
     }
 
-//    /**
-//     * 결제 목록 조회
-//     */
-//    @GetMapping("")
-//    public PaymentResponse execute(
-//            @Valid @RequestBody PaymentCommand req
-//    ) {
-//        Payment p = service.execute(idemKey, req);
-//        return toResponse(p);
-//    }
+    /**
+     * 결제 목록 조회
+     */
+    @GetMapping("/payments")
+    public ApiResponse<List<PaymentResponse>> getPayments(
+            @Valid @RequestBody PaymentSearchRequest req
+    ) {
+        List<PaymentResponse> paymentResponse = paymentService.getPayments(req.toCriteria());
+        return ApiResponse.ok(paymentResponse);
+    }
+
+    /**
+     * 결제 목록 조회
+     */
+    @GetMapping()
+    public PaymentResponse execute(
+            @Valid @RequestBody PaymentCommand req
+    ) {
+        PaymentResponse paymentResponse = paymentService.execute(req.toCommand(idemKey));
+        return ApiResponse.ok(paymentResponse);
+    }
 //
 //    /**
 //     * 결제 목록 단건 조회
