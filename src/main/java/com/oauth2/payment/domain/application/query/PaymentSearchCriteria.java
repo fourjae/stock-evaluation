@@ -3,15 +3,17 @@ package com.oauth2.payment.domain.application.query;
 import com.oauth2.constants.payment.PaymentStatus;
 import lombok.Builder;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 @Builder
 public record PaymentSearchCriteria(
-        PaymentStatus status,
-        LocalDateTime fromDate,
-        LocalDateTime toDate,
-        Long memberId,
+        PaymentStatus paymentStatus,
+        OffsetDateTime fromDate,
+        OffsetDateTime toDate,
+        String customerId,
         Integer page,
         Integer size
 ) {}
+
+
 

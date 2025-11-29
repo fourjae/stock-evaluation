@@ -2,6 +2,7 @@ package com.oauth2.dto.response;
 
 import com.oauth2.constants.payment.PaymentStatus;
 import com.oauth2.payment.domain.Payment;
+import com.oauth2.payment.domain.application.query.PaymentListView;
 import lombok.Builder;
 
 import java.util.UUID;
@@ -17,13 +18,13 @@ public record PaymentResponse(
         OffsetDateTime paidAt
 )
 {
-    public static PaymentResponse from(Payment payment) {
+    public static PaymentResponse from(PaymentListView view) {
         return PaymentResponse.builder()
-                .paymentId(payment.getId())
-                .paymentStatus(payment.getPaymentStatus())
-                .amount(payment.getAmount())
-                .gatewayPaymentId(payment.getGatewayPaymentId())
-                .paidAt(payment.getPaidAt())
+                .paymentId(view.getId())
+                .paymentStatus(view.getPaymentStatus())
+                .amount(view.getAmount())
+                .gatewayPaymentId(view.getGatewayPaymentId())
+                .paidAt(view.getPaidAt())
                 .build();
     }
 }

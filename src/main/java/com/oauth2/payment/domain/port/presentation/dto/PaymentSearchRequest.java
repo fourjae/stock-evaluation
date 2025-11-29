@@ -1,4 +1,4 @@
-package com.oauth2.payment.domain.presentation.dto;
+package com.oauth2.payment.domain.port.presentation.dto;
 
 
 import com.oauth2.constants.payment.PaymentStatus;
@@ -7,6 +7,7 @@ import lombok.Builder;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Builder
 public record PaymentSearchRequest(
@@ -20,8 +21,8 @@ public record PaymentSearchRequest(
     public PaymentSearchCriteria toCriteria() {
         return PaymentSearchCriteria.builder()
                         .status(status)
-                        .fromDate(fromDate)
-                        .toDate(toDate)
+                        .fromDate(Objects.isNull(fromDate) ?  LocalDateTime.now().minusMonths(1) : fromDate)
+                        .toDate(Objects.isNull(toDate) ? toDate : LocalDateTime.now())
                         .memberId(memberId)
                         .page(page)
                         .size(size)

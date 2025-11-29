@@ -1,4 +1,4 @@
-package com.oauth2.payment.domain.presentation.dto;
+package com.oauth2.payment.domain.port.presentation.dto;
 
 import com.oauth2.payment.domain.application.query.ChargePaymentCommand;
 import jakarta.validation.constraints.NotBlank;

@@ -1,13 +1,15 @@
-package com.oauth2.payment.domain.presentation;
+package com.oauth2.payment.domain.port.presentation;
 
 import com.oauth2.dto.ApiResponse;
 import com.oauth2.dto.request.payment.PaymentCommand;
 import com.oauth2.dto.response.PaymentResponse;
 import com.oauth2.payment.domain.application.PaymentService;
-import com.oauth2.payment.domain.presentation.dto.ChargePaymentRequest;
-import com.oauth2.payment.domain.presentation.dto.PaymentSearchRequest;
+import com.oauth2.payment.domain.port.presentation.dto.ChargePaymentRequest;
+import com.oauth2.payment.domain.port.presentation.dto.PaymentSearchRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.query.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -37,22 +39,13 @@ public class PaymentController {
      */
     @GetMapping("/payments")
     public ApiResponse<List<PaymentResponse>> getPayments(
-            @Valid @RequestBody PaymentSearchRequest req
+            @Valid PaymentSearchRequest req,
+            Pageable pageable
     ) {
-        List<PaymentResponse> paymentResponse = paymentService.getPayments(req.toCriteria());
+        List<PaymentResponse> paymentResponse = paymentService.getPayments(req.toCriteria(), pageable);
         return ApiResponse.ok(paymentResponse);
     }
 
-    /**
-     * 결제 목록 조회
-     */
-    @GetMapping()
-    public PaymentResponse execute(
-            @Valid @RequestBody PaymentCommand req
-    ) {
-        PaymentResponse paymentResponse = paymentService.execute(req.toCommand(idemKey));
-        return ApiResponse.ok(paymentResponse);
-    }
 //
 //    /**
 //     * 결제 목록 단건 조회
