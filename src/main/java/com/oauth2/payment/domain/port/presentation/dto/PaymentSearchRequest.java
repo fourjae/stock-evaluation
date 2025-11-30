@@ -7,23 +7,24 @@ import lombok.Builder;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Objects;
 
 @Builder
 public record PaymentSearchRequest(
-        PaymentStatus status,
-        LocalDateTime fromDate,
-        LocalDateTime toDate,
-        Long memberId,
+        PaymentStatus paymentStatus,
+        OffsetDateTime fromDate,
+        OffsetDateTime toDate,
+        String customerId,
         Integer page,
         Integer size
 ) {
     public PaymentSearchCriteria toCriteria() {
         return PaymentSearchCriteria.builder()
-                        .status(status)
-                        .fromDate(Objects.isNull(fromDate) ?  LocalDateTime.now().minusMonths(1) : fromDate)
-                        .toDate(Objects.isNull(toDate) ? toDate : LocalDateTime.now())
-                        .memberId(memberId)
+                        .paymentStatus(paymentStatus)
+                        .fromDate(Objects.isNull(fromDate) ?  OffsetDateTime.now().minusMonths(1) : fromDate)
+                        .toDate(Objects.isNull(toDate) ? toDate : OffsetDateTime.now())
+                        .customerId(customerId)
                         .page(page)
                         .size(size)
                         .build();

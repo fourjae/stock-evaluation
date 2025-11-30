@@ -8,7 +8,7 @@ import java.util.Map;
 @Builder
 public record GatewayChargeResult(
     boolean succeeded,
-    String gatewayPaymentId,
+    String paymentKey,
     PaymentStatus paymentStatus, // e.g., "SUCCEEDED", "FAILED"
     String failureCode, // e.g., psp code
     String failureMessage,

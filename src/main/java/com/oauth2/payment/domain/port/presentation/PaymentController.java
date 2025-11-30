@@ -1,22 +1,26 @@
 package com.oauth2.payment.domain.port.presentation;
 
 import com.oauth2.dto.ApiResponse;
-import com.oauth2.dto.request.payment.PaymentCommand;
-import com.oauth2.dto.response.PaymentResponse;
+import com.oauth2.dto.response.PaymentCreateResponse;
+import com.oauth2.dto.response.PaymentDetailResponse;
+import com.oauth2.dto.response.PaymentSummaryResponse;
 import com.oauth2.payment.domain.application.PaymentService;
 import com.oauth2.payment.domain.port.presentation.dto.ChargePaymentRequest;
+import com.oauth2.payment.domain.port.presentation.dto.PaymentDetailCriteria;
 import com.oauth2.payment.domain.port.presentation.dto.PaymentSearchRequest;
+import com.oauth2.security.CustomUserPrincipal;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.query.Page;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 
 @RestController
-@RequestMapping("/v1/payments")
+@RequestMapping("/api/v1/payments")
 @RequiredArgsConstructor
 public class PaymentController {
 
@@ -26,11 +30,11 @@ public class PaymentController {
      * 결제 생성 & 실행
      */
     @PostMapping
-    public ApiResponse<PaymentResponse> executePayment(
+    public ApiResponse<PaymentCreateResponse> executePayment(
             @RequestHeader(value = "Idempotency-Key", required = false) String idemKey,
             @Valid @RequestBody ChargePaymentRequest req
     ) {
-        PaymentResponse paymentResponse = paymentService.executePayment(req.toCommand(idemKey));
+        PaymentCreateResponse paymentResponse = paymentService.executePayment(req.toCommand(idemKey));
         return ApiResponse.ok(paymentResponse);
     }
 
@@ -38,35 +42,29 @@ public class PaymentController {
      * 결제 목록 조회
      */
     @GetMapping("/payments")
-    public ApiResponse<List<PaymentResponse>> getPayments(
+    public ApiResponse<Page<PaymentSummaryResponse>> getPayments(
             @Valid PaymentSearchRequest req,
             Pageable pageable
     ) {
-        List<PaymentResponse> paymentResponse = paymentService.getPayments(req.toCriteria(), pageable);
+        Page<PaymentSummaryResponse> paymentResponse = paymentService.getPayments(req.toCriteria(), pageable);
         return ApiResponse.ok(paymentResponse);
     }
 
-//
-//    /**
-//     * 결제 목록 단건 조회
-//     */
-//    @GetMapping("/{paymentId}")
-//    public PaymentResponse execute(
-//            @Valid @RequestBody PaymentCommand req
-//    ) {
-//        Payment p = service.execute(idemKey, req);
-//        return toResponse(p);
-//    }
-//
-//    /**
-//     * 결제 취소 요청
-//     */
-//    @DeleteMapping("")
-//    public PaymentResponse executePayment(
-//            @RequestHeader(value = "Idempotency-Key", required = false) String idemKey,
-//            @Valid @RequestBody PaymentCommand request
-//    ) {
-//        return
-//    }
+    /**
+     * 결제 단건 조회
+     */
+    @GetMapping("/{paymentKey}")
+    public ApiResponse<PaymentDetailResponse> getPayment(
+            @PathVariable String paymentKey,
+            @AuthenticationPrincipal CustomUserPrincipal user // 로그인 사용자
+    ) {
+        PaymentDetailResponse paymentDetailResponse = paymentService.getPayment(
+                PaymentDetailCriteria.builder()
+                        .paymentKey(paymentKey)
+                        .userId(user.getUserId())
+                        .build()
+        );
+        return ApiResponse.ok(paymentDetailResponse);
+    }
 
 }

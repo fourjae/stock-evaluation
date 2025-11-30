@@ -9,5 +9,5 @@ public interface PaymentCommandRepositoryPort {
 
     Payment save(Payment p);
 
-    Optional<Payment> findById(Long paymentId);
+    Optional<Payment> findById(UUID paymentId);
 }

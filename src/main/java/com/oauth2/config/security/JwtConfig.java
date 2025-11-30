@@ -1,4 +1,4 @@
-package com.oauth2.config;
+package com.oauth2.config.security;
 
 import com.oauth2.properties.JwtProperties;
 import com.oauth2.security.oauth2.jwt.JwtTokenProvider;
