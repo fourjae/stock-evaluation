@@ -7,13 +7,12 @@ import lombok.Getter;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
-import java.util.String;
 
 @Getter
 @AllArgsConstructor
 public class PaymentListView {
 
-    private final String id;
+    private final String paymentKey;
     private final String customerId;
     private final BigDecimal amount;
     private final PaymentStatus paymentStatus;

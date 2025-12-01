@@ -1,10 +1,13 @@
 package com.oauth2.payment.domain.port.presentation;
 
 import com.oauth2.dto.ApiResponse;
+import com.oauth2.dto.request.payment.PaymentCancelCommand;
+import com.oauth2.dto.response.PaymentCancelResponse;
 import com.oauth2.dto.response.PaymentCreateResponse;
 import com.oauth2.dto.response.PaymentDetailResponse;
 import com.oauth2.dto.response.PaymentSummaryResponse;
 import com.oauth2.payment.domain.application.PaymentService;
+import com.oauth2.payment.domain.port.presentation.dto.CancelPaymentRequest;
 import com.oauth2.payment.domain.port.presentation.dto.ChargePaymentRequest;
 import com.oauth2.payment.domain.port.presentation.dto.PaymentDetailCriteria;
 import com.oauth2.payment.domain.port.presentation.dto.PaymentSearchRequest;
@@ -58,13 +61,30 @@ public class PaymentController {
             @PathVariable String paymentKey,
             @AuthenticationPrincipal CustomUserPrincipal user // 로그인 사용자
     ) {
-        PaymentDetailResponse paymentDetailResponse = paymentService.getPayment(
+        PaymentDetailResponse paymentResponse = paymentService.getPayment(
                 PaymentDetailCriteria.builder()
                         .paymentKey(paymentKey)
                         .userId(user.getUserId())
                         .build()
         );
-        return ApiResponse.ok(paymentDetailResponse);
+        return ApiResponse.ok(paymentResponse);
+    }
+
+
+    /**
+     * 결제 취소 요청
+     */
+    @PostMapping("/{paymentKey}/cancel")
+    public ApiResponse<PaymentCancelResponse> cancelPayment(
+            @PathVariable String paymentKey,
+            @AuthenticationPrincipal CustomUserPrincipal user,
+            @RequestBody(required = false) CancelPaymentRequest request
+    ) {
+        PaymentCancelResponse paymentResponse = paymentService.cancelPayment(
+                request.toCommand(user.getUserId(), paymentKey)
+        );
+
+        return ApiResponse.ok(paymentResponse);
     }
 
 }

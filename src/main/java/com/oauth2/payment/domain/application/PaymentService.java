@@ -1,5 +1,7 @@
 package com.oauth2.payment.domain.application;
 
+import com.oauth2.dto.request.payment.PaymentCancelCommand;
+import com.oauth2.dto.response.PaymentCancelResponse;
 import com.oauth2.dto.response.PaymentCreateResponse;
 import com.oauth2.dto.response.PaymentDetailResponse;
 import com.oauth2.dto.response.PaymentSummaryResponse;
@@ -16,8 +18,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -60,10 +60,34 @@ public class PaymentService {
      */
     public PaymentDetailResponse getPayment(PaymentDetailCriteria criteria) {
 
-        Payment payment = paymentQueryRepository.findByPaymentKey(criteria)
-                .orElseThrow(() -> new NotFoundException("결제를 찾을 수 없습니다."));
+        // 1) 결제 조회 (paymentKey 기준)
+        Payment payment = paymentQueryRepository.findByPaymentKeyAndCustomerId(
+                criteria.paymentKey(), criteria.userId()
+        ).orElseThrow(() -> new NotFoundException("결제를 찾을 수 없습니다."));
 
         return PaymentDetailResponse.from(payment);
     }
+
+    /**
+     * 결제 취소
+     */
+    public PaymentCancelResponse cancelPayment(PaymentCancelCommand command) {
+        // 1) 결제 조회 (paymentKey 기준)
+        Payment payment = paymentQueryRepository.findByPaymentKeyAndCustomerId(
+                command.paymentKey(), command.userId()
+        ).orElseThrow(() -> new NotFoundException("결제를 찾을 수 없습니다."));
+
+
+        // 4) 취소 처리 (도메인 메서드에 위임)
+        payment.cancel(command.userId(), command.cancelReason());
+
+        // 5) 저장
+        Payment saved = paymentCommandRepository.save(payment);
+
+        return PaymentCancelResponse.from(saved);
+    }
+
+
+
 
 }

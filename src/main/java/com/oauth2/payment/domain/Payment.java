@@ -1,6 +1,8 @@
 package com.oauth2.payment.domain;
 
 import com.oauth2.constants.payment.PaymentStatus;
+import com.oauth2.dto.request.payment.PaymentCancelCommand;
+import com.oauth2.dto.request.payment.PaymentCommand;
 import com.oauth2.payment.domain.port.out.dto.GatewayChargeResult;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -45,6 +47,7 @@ public class Payment {
     private String methodId;
     private String failureCode;
     private String failureMessage;
+    private String cancelReason;
     private OffsetDateTime paidAt;
 
     private OffsetDateTime createdAt;
@@ -70,6 +73,29 @@ public class Payment {
             this.paymentStatus = PaymentStatus.FAILED;
         }
     }
+
+    public void cancel(String userId, String cancelReason) {
+        // 1) 소유자 검증
+        if (!this.customerId.equals(String.valueOf(userId))) {
+            // 스프링 시큐리티의 AccessDeniedException을 직접 쓰기 싫으면
+            // PaymentAccessDeniedException 같은 커스텀 예외 하나 파도 됨
+            throw new AccessDeniedException("본인 결제만 취소할 수 있습니다.");
+        }
+
+        // 2) 상태 검증
+        if (this.paymentStatus == PaymentStatus.CANCELED) {
+            throw new IllegalStateException("이미 취소된 결제입니다.");
+        }
+        if (this.paymentStatus == PaymentStatus.FAILED) {
+            throw new IllegalStateException("실패한 결제는 취소할 수 없습니다.");
+        }
+
+        // 3) 상태 변경
+        this.paymentStatus = PaymentStatus.CANCELED;
+        this.failureCode = "USER_CANCELLED";
+        this.cancelReason = cancelReason;
+    }
+
 
 }
 

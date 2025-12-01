@@ -11,7 +11,7 @@ import java.util.*;
 
 @Builder
 public record PaymentSummaryResponse(
-    String id,
+    String paymentKey,
     String customerId,
     BigDecimal amount,
     PaymentStatus paymentStatus,
@@ -21,7 +21,7 @@ public record PaymentSummaryResponse(
 {
     public static PaymentSummaryResponse from(PaymentListView view) {
         return PaymentSummaryResponse.builder()
-                .id(view.getId())
+                .paymentKey(view.getPaymentKey())
                 .customerId(view.getCustomerId())
                 .amount(view.getAmount())
                 .paymentStatus(view.getPaymentStatus())

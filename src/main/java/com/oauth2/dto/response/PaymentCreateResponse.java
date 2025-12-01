@@ -10,20 +10,17 @@ import java.time.OffsetDateTime;
 
 @Builder
 public record PaymentCreateResponse(
-        String paymentId,
         PaymentStatus paymentStatus,
         BigDecimal amount,
         String paymentKey,
         OffsetDateTime paidAt,
         OffsetDateTime createdAt
-)
-{
+) {
     public static PaymentCreateResponse from(Payment payment) {
         return PaymentCreateResponse.builder()
-                .paymentId(payment.getId())
                 .paymentStatus(payment.getPaymentStatus())
                 .amount(payment.getAmount())
-                .paymentKey(payment.getpaymentKey())
+                .paymentKey(payment.getPaymentKey())
                 .paidAt(payment.getPaidAt())
                 .build();
     }
