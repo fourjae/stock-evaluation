@@ -8,15 +8,17 @@ import lombok.Builder;
 import java.time.OffsetDateTime;
 import java.util.Objects;
 
-@Builder
+
 public record PaymentDetailCriteria(
         String paymentKey,
+        String orderId,
         String userId
 ) {
-    public PaymentDetailCriteria toCriteria(String paymentKey, String userId) {
-        return PaymentDetailCriteria.builder()
-                        .paymentKey(paymentKey)
-                        .userId(userId)
-                        .build();
+    public static PaymentDetailCriteria byPaymentKey(String paymentKey, String userId) {
+        return new PaymentDetailCriteria(paymentKey, null, userId);
+    }
+
+    public static PaymentDetailCriteria byOrderId(String orderId, String userId) {
+        return new PaymentDetailCriteria(null, orderId, userId);
     }
 }

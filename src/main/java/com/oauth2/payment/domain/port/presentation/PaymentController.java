@@ -62,14 +62,10 @@ public class PaymentController {
             @AuthenticationPrincipal CustomUserPrincipal user // 로그인 사용자
     ) {
         PaymentDetailResponse paymentResponse = paymentService.getPayment(
-                PaymentDetailCriteria.builder()
-                        .paymentKey(paymentKey)
-                        .userId(user.getUserId())
-                        .build()
+                PaymentDetailCriteria.byPaymentKey(paymentKey, user.getUserId())
         );
         return ApiResponse.ok(paymentResponse);
     }
-
 
     /**
      * 결제 취소 요청
@@ -86,5 +82,21 @@ public class PaymentController {
 
         return ApiResponse.ok(paymentResponse);
     }
+
+    /**
+     * 주문번호 기준 결제 단건 조회
+     */
+    @GetMapping("/by-order/{orderId}")
+    public ApiResponse<PaymentDetailResponse> getPaymentByOrderId(
+            @PathVariable String orderId,
+            @AuthenticationPrincipal CustomUserPrincipal user
+    ) {
+        PaymentDetailResponse paymentResponse = paymentService.getPayment(
+            PaymentDetailCriteria.byOrderId(orderId, user.getUserId())
+        );
+
+        return ApiResponse.ok(paymentResponse);
+    }
+
 
 }

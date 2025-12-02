@@ -16,12 +16,13 @@ public record PaymentCreateResponse(
         OffsetDateTime paidAt,
         OffsetDateTime createdAt
 ) {
-    public static PaymentCreateResponse from(Payment payment) {
-        return PaymentCreateResponse.builder()
-                .paymentStatus(payment.getPaymentStatus())
-                .amount(payment.getAmount())
-                .paymentKey(payment.getPaymentKey())
-                .paidAt(payment.getPaidAt())
-                .build();
+    public static PaymentCreateResponse from(Payment p) {
+        return new PaymentCreateResponse(
+                p.getPaymentStatus(),
+                p.getAmount(),
+                p.getPaymentKey(),
+                p.getPaidAt(),
+                p.getCreatedAt()
+        );
     }
 }

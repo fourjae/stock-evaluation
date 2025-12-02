@@ -1,5 +1,6 @@
 package com.oauth2.payment.domain.application;
 
+import com.oauth2.common.exception.NotFoundException;
 import com.oauth2.dto.request.payment.PaymentCancelCommand;
 import com.oauth2.dto.response.PaymentCancelResponse;
 import com.oauth2.dto.response.PaymentCreateResponse;
@@ -61,9 +62,8 @@ public class PaymentService {
     public PaymentDetailResponse getPayment(PaymentDetailCriteria criteria) {
 
         // 1) 결제 조회 (paymentKey 기준)
-        Payment payment = paymentQueryRepository.findByPaymentKeyAndCustomerId(
-                criteria.paymentKey(), criteria.userId()
-        ).orElseThrow(() -> new NotFoundException("결제를 찾을 수 없습니다."));
+        Payment payment = paymentQueryRepository.findDetail(criteria)
+                .orElseThrow(() -> new NotFoundException("결제를 찾을 수 없습니다."));
 
         return PaymentDetailResponse.from(payment);
     }

@@ -7,6 +7,7 @@ import com.oauth2.payment.domain.application.query.PaymentListView;
 import com.oauth2.payment.domain.application.query.PaymentSearchCriteria;
 import com.oauth2.payment.domain.port.out.PaymentCommandRepositoryPort;
 import com.oauth2.payment.domain.port.out.PaymentQueryRepositoryPort;
+import com.oauth2.payment.domain.port.presentation.dto.PaymentDetailCriteria;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static com.oauth2.payment.domain.QPayment.payment;
 
@@ -69,6 +71,21 @@ public class PaymentQueryRepositoryImpl implements PaymentQueryRepositoryPort {
     }
 
 
+    @Override
+    public Optional<Payment> findDetail(PaymentDetailCriteria criteria) {
+        Payment result = queryFactory
+                .selectFrom(payment)
+                .where(
+                        customerIdEq(criteria.userId()),
+                        paymentKeyOrOrderIdEq(criteria)
+                )
+                .fetchOne();
+
+        return Optional.ofNullable(result);
+    }
+
+
+
     private BooleanExpression customerIdEq(String customerId) {
         return customerId != null ? payment.customerId.eq(customerId) : null;
     }
@@ -86,6 +103,16 @@ public class PaymentQueryRepositoryImpl implements PaymentQueryRepositoryPort {
         }
         if (to != null) {
             return payment.paidAt.loe(to);
+        }
+        return null;
+    }
+
+    private BooleanExpression paymentKeyOrOrderIdEq(PaymentDetailCriteria criteria) {
+        if (criteria.paymentKey() != null) {
+            return payment.paymentKey.eq(criteria.paymentKey());
+        }
+        if (criteria.orderId() != null) {
+            return payment.orderId.eq(criteria.orderId());
         }
         return null;
     }

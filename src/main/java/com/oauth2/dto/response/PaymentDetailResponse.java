@@ -26,23 +26,24 @@ public record PaymentDetailResponse(
         String updatedBy
 ) {
 
-    public static PaymentDetailResponse from(Payment payment) {
+    public static PaymentDetailResponse from(Payment p) {
         return new PaymentDetailResponse(
-                payment.getPaymentKey(),
-                payment.getGatewayPaymentId(),
-                payment.getAmount(),
-                payment.getCurrency(),
-                payment.getPaymentStatus(),
-                payment.getCustomerId(),
-                payment.getMethodId(),
-                payment.getFailureCode(),
-                payment.getFailureMessage(),
-                payment.getPaidAt(),
-                payment.getCreatedAt(),
-                payment.getCreatedBy(),
-                payment.getUpdatedAt(),
-                payment.getUpdatedBy()
+                p.getPaymentKey(),
+                p.getGatewayPaymentId(),
+                p.getAmount(),
+                p.getCurrency(),
+                p.getPaymentStatus(),
+                p.getCustomerId(),
+                p.getMethodId(),
+                p.getFailureCode(),
+                p.getFailureMessage(),
+                p.getPaidAt(),
+                p.getCreatedAt(),
+                p.getCreatedBy(),
+                p.getUpdatedAt(),
+                p.getUpdatedBy()
         );
     }
+
 }
 
