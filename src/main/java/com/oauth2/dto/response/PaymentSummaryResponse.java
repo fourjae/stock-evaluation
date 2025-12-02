@@ -17,16 +17,15 @@ public record PaymentSummaryResponse(
     PaymentStatus paymentStatus,
     OffsetDateTime paidAt,
     OffsetDateTime createdAt
-)
-{
+) {
     public static PaymentSummaryResponse from(PaymentListView view) {
-        return PaymentSummaryResponse.builder()
-                .paymentKey(view.getPaymentKey())
-                .customerId(view.getCustomerId())
-                .amount(view.getAmount())
-                .paymentStatus(view.getPaymentStatus())
-                .paidAt(view.getPaidAt())
-                .createdAt(view.getCreatedAt())
-                .build();
+        return new PaymentSummaryResponse(
+                view.getPaymentKey(),
+                view.getCustomerId(),
+                view.getAmount(),
+                view.getPaymentStatus(),
+                view.getPaidAt(),
+                view.getCreatedAt()
+        );
     }
 }

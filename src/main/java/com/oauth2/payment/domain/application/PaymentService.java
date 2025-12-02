@@ -1,5 +1,6 @@
 package com.oauth2.payment.domain.application;
 
+import com.oauth2.common.exception.NotFoundException;
 import com.oauth2.dto.request.payment.PaymentCancelCommand;
 import com.oauth2.dto.response.PaymentCancelResponse;
 import com.oauth2.dto.response.PaymentCreateResponse;
