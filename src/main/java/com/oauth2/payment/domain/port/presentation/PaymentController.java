@@ -1,7 +1,6 @@
 package com.oauth2.payment.domain.port.presentation;
 
 import com.oauth2.dto.ApiResponse;
-import com.oauth2.dto.request.payment.PaymentCancelCommand;
 import com.oauth2.dto.response.PaymentCancelResponse;
 import com.oauth2.dto.response.PaymentCreateResponse;
 import com.oauth2.dto.response.PaymentDetailResponse;
@@ -18,9 +17,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-
 
 @RestController
 @RequestMapping("/api/v1/payments")
@@ -59,7 +55,7 @@ public class PaymentController {
     @GetMapping("/{paymentKey}")
     public ApiResponse<PaymentDetailResponse> getPayment(
             @PathVariable String paymentKey,
-            @AuthenticationPrincipal CustomUserPrincipal user // 로그인 사용자
+            @AuthenticationPrincipal CustomUserPrincipal user
     ) {
         PaymentDetailResponse paymentResponse = paymentService.getPayment(
                 PaymentDetailCriteria.byPaymentKey(paymentKey, user.getUserId())
