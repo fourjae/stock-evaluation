@@ -2,16 +2,13 @@ package com.oauth2.payment.domain.infrastructure.persistence;
 
 import com.oauth2.constants.payment.PaymentStatus;
 import com.oauth2.payment.domain.Payment;
-import com.oauth2.payment.domain.QPayment;
 import com.oauth2.payment.domain.application.query.PaymentListView;
 import com.oauth2.payment.domain.application.query.PaymentSearchCriteria;
-import com.oauth2.payment.domain.port.out.PaymentCommandRepositoryPort;
 import com.oauth2.payment.domain.port.out.PaymentQueryRepositoryPort;
 import com.oauth2.payment.domain.port.presentation.dto.PaymentDetailCriteria;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -72,7 +69,7 @@ public class PaymentQueryRepositoryImpl implements PaymentQueryRepositoryPort {
 
 
     @Override
-    public Optional<Payment> findDetail(PaymentDetailCriteria criteria) {
+    public Optional<Payment> findByCriteria(PaymentDetailCriteria criteria) {
         Payment result = queryFactory
                 .selectFrom(payment)
                 .where(

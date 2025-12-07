@@ -2,6 +2,8 @@ package com.oauth2.constants.payment;
 
 import lombok.RequiredArgsConstructor;
 
+import java.util.EnumSet;
+
 @RequiredArgsConstructor
 public enum PaymentStatus {
     REQUEST("요청"),
@@ -11,5 +13,13 @@ public enum PaymentStatus {
     FAILED("실패")
     ;
 
+
+    private static final EnumSet<PaymentStatus> RETRYABLE_STATUSES =
+            EnumSet.of(FAILED, PENDING);
+
     private final String name;
+
+    public boolean isRetryable() {
+        return RETRYABLE_STATUSES.contains(this);
+    }
 }

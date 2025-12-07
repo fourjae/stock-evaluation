@@ -13,5 +13,5 @@ import java.util.Optional;
 public interface PaymentQueryRepositoryPort {
     Page<PaymentListView> findPayments(PaymentSearchCriteria cond, Pageable pageable);
     Optional<Payment> findByPaymentKeyAndCustomerId(String paymentKey, String customerId);
-    Optional<Payment> findDetail(PaymentDetailCriteria criteria);
+    Optional<Payment> findByCriteria(PaymentDetailCriteria criteria);
 }

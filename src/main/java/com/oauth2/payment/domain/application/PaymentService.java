@@ -15,10 +15,12 @@ import com.oauth2.payment.domain.port.out.PaymentCommandRepositoryPort;
 import com.oauth2.payment.domain.port.out.PaymentQueryRepositoryPort;
 import com.oauth2.payment.domain.port.out.dto.GatewayChargeResult;
 import com.oauth2.payment.domain.port.presentation.dto.PaymentDetailCriteria;
+import com.oauth2.payment.domain.port.presentation.dto.RetryPaymentCommand;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -62,7 +64,7 @@ public class PaymentService {
     public PaymentDetailResponse getPayment(PaymentDetailCriteria criteria) {
 
         // 1) 결제 조회 (paymentKey 기준)
-        Payment payment = paymentQueryRepository.findDetail(criteria)
+        Payment payment = paymentQueryRepository.findByCriteria(criteria)
                 .orElseThrow(() -> new NotFoundException("결제를 찾을 수 없습니다."));
 
         return PaymentDetailResponse.from(payment);
@@ -86,6 +88,34 @@ public class PaymentService {
 
         return PaymentCancelResponse.from(saved);
     }
+
+    // application.payment.PaymentService
+
+    @Transactional
+    public PaymentCreateResponse retryPayment(RetryPaymentCommand command) {
+
+        // 1) 결제 조회 (사용자 소유 검증까지 포함)
+        Payment payment = paymentQueryRepository.findByCriteria(
+                        PaymentDetailCriteria.byPaymentKey(command.paymentKey(), command.userId())
+                )
+                .orElseThrow(() -> new NotFoundException("결제를 찾을 수 없습니다."));
+
+        // 2) 재시도 가능 상태인지 도메인 규칙 체크
+        payment.validateRetryable();
+
+        // 3) 외부 PG 재호출
+        GatewayChargeResult gwRes = paymentGateway.charge(payment.toGatewayChargeRequest());
+
+        // 4) 외부 결과를 도메인에 반영 (상태/승인번호 등)
+        payment.applyGatewayResult(gwRes);
+
+        // 5) 저장
+        Payment saved = paymentCommandRepository.save(payment);
+
+        // 6) 응답 변환 (처음 생성 때랑 동일한 DTO 써도 됨)
+        return PaymentCreateResponse.from(saved);
+    }
+
 
 
 

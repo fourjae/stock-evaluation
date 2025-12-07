@@ -6,10 +6,7 @@ import com.oauth2.dto.response.PaymentCreateResponse;
 import com.oauth2.dto.response.PaymentDetailResponse;
 import com.oauth2.dto.response.PaymentSummaryResponse;
 import com.oauth2.payment.domain.application.PaymentService;
-import com.oauth2.payment.domain.port.presentation.dto.CancelPaymentRequest;
-import com.oauth2.payment.domain.port.presentation.dto.ChargePaymentRequest;
-import com.oauth2.payment.domain.port.presentation.dto.PaymentDetailCriteria;
-import com.oauth2.payment.domain.port.presentation.dto.PaymentSearchRequest;
+import com.oauth2.payment.domain.port.presentation.dto.*;
 import com.oauth2.security.CustomUserPrincipal;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -93,6 +90,21 @@ public class PaymentController {
 
         return ApiResponse.ok(paymentResponse);
     }
+
+    /**
+     * 결제 재시도
+     */
+    @PostMapping("/{paymentKey}/retry")
+    public ApiResponse<PaymentCreateResponse> retryPayment(
+            @PathVariable String paymentKey,
+            @AuthenticationPrincipal CustomUserPrincipal user
+    ) {
+        PaymentCreateResponse response = paymentService.retryPayment(
+                RetryPaymentCommand.of(paymentKey, user.getUserId())
+        );
+        return ApiResponse.ok(response);
+    }
+
 
 
 }

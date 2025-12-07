@@ -15,6 +15,8 @@ import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.*;
 
+import static com.oauth2.constants.payment.PaymentStatus.FAILED;
+import static com.oauth2.constants.payment.PaymentStatus.PENDING;
 import static lombok.AccessLevel.PRIVATE;
 import static lombok.AccessLevel.PROTECTED;
 
@@ -56,9 +58,8 @@ public class Payment {
     private OffsetDateTime updatedAt;
     private String updatedBy;
 
-
     public void applyGatewayResult(GatewayChargeResult gw) {
-        if (this.paymentStatus != PaymentStatus.PENDING) {
+        if (this.paymentStatus != PENDING) {
             throw new IllegalStateException("PENDING 상태에서만 결제 결과를 반영할 수 있습니다. current=" + paymentStatus);
         }
 
@@ -71,7 +72,7 @@ public class Payment {
             this.paymentStatus = PaymentStatus.SUCCEEDED;
             this.paidAt = OffsetDateTime.now();
         } else {
-            this.paymentStatus = PaymentStatus.FAILED;
+            this.paymentStatus = FAILED;
         }
     }
 
@@ -87,7 +88,7 @@ public class Payment {
         if (this.paymentStatus == PaymentStatus.CANCELED) {
             throw new IllegalStateException("이미 취소된 결제입니다.");
         }
-        if (this.paymentStatus == PaymentStatus.FAILED) {
+        if (this.paymentStatus == FAILED) {
             throw new IllegalStateException("실패한 결제는 취소할 수 없습니다.");
         }
 
@@ -95,6 +96,12 @@ public class Payment {
         this.paymentStatus = PaymentStatus.CANCELED;
         this.failureCode = "USER_CANCELLED";
         this.cancelReason = cancelReason;
+    }
+
+    public void validateRetryable() {
+        if (!paymentStatus.isRetryable()) {
+            throw new IllegalStateException("현재 상태에서는 결제를 재시도할 수 없습니다. status=" + paymentStatus);
+        }
     }
 
 
