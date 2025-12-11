@@ -103,8 +103,11 @@ public class PaymentService {
         // 2) 재시도 가능 상태인지 도메인 규칙 체크
         payment.validateRetryable();
 
+        // ✅ 도메인 → 애플리케이션 커맨드 변환
+        ChargePaymentCommand chargeCommand = ChargePaymentCommand.from(payment);
+
         // 3) 외부 PG 재호출
-        GatewayChargeResult gwRes = paymentGateway.charge(payment.toGatewayChargeRequest());
+        GatewayChargeResult gwRes = paymentGateway.charge(chargeCommand.toGatewayChargeRequest());
 
         // 4) 외부 결과를 도메인에 반영 (상태/승인번호 등)
         payment.applyGatewayResult(gwRes);

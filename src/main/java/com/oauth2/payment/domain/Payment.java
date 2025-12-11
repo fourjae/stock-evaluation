@@ -1,8 +1,7 @@
 package com.oauth2.payment.domain;
 
 import com.oauth2.constants.payment.PaymentStatus;
-import com.oauth2.dto.request.payment.PaymentCancelCommand;
-import com.oauth2.dto.request.payment.PaymentCommand;
+import com.oauth2.payment.domain.infrastructure.persistence.converter.MapToJsonConverter;
 import com.oauth2.payment.domain.port.out.dto.GatewayChargeResult;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -46,6 +45,10 @@ public class Payment {
 
     @Enumerated(EnumType.STRING)
     private PaymentStatus paymentStatus;
+
+    @Convert(converter = MapToJsonConverter.class)
+    private Map<String, String> metadata;
+
     private String customerId;
     private String methodId;
     private String failureCode;
