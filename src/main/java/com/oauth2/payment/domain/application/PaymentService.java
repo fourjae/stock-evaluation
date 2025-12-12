@@ -15,6 +15,7 @@ import com.oauth2.payment.domain.port.out.PaymentCommandRepositoryPort;
 import com.oauth2.payment.domain.port.out.PaymentQueryRepositoryPort;
 import com.oauth2.payment.domain.port.out.dto.GatewayChargeResult;
 import com.oauth2.payment.domain.port.presentation.dto.PaymentDetailCriteria;
+import com.oauth2.payment.domain.port.presentation.dto.ResyncPaymentStatusCommand;
 import com.oauth2.payment.domain.port.presentation.dto.RetryPaymentCommand;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -117,6 +118,24 @@ public class PaymentService {
 
         // 6) 응답 변환 (처음 생성 때랑 동일한 DTO 써도 됨)
         return PaymentCreateResponse.from(saved);
+    }
+
+    public PaymentDetailResponse resyncPaymentStatus(ResyncPaymentStatusCommand command) {
+
+        // 1) 결제 조회 (사용자 소유 검증까지 포함)
+        Payment payment = paymentQueryRepository.findByCriteria(
+                        PaymentDetailCriteria.byPaymentKey(command.paymentKey(), command.userId())
+                )
+                .orElseThrow(() -> new NotFoundException("결제를 찾을 수 없습니다."));
+
+        // ⭐ PG에 "지금 이 결제 상태가 뭐냐" 조회만 한다
+        GatewayPaymentStatusResponse pgStatus = paymentGateway.inquire(payment.getGatewayPaymentId());
+
+        payment.syncWithGatewayStatus(pgStatus);
+
+        paymentCommandRepository.save(payment);
+
+        return PaymentDetailResponse.from(payment);
     }
 
 

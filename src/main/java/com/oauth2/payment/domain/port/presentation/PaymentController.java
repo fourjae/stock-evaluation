@@ -105,6 +105,15 @@ public class PaymentController {
         return ApiResponse.ok(response);
     }
 
+    /** * 결제 상태 재동기화 (관리자/내부용) */
+    @PostMapping("/{paymentKey}/resync")
+    public ApiResponse<PaymentDetailResponse> resyncPaymentStatus(
+            @PathVariable String paymentKey,
+            @AuthenticationPrincipal CustomUserPrincipal user
+    ) {
+        PaymentDetailResponse response = paymentService.resyncPaymentStatus(paymentKey);
+        return ApiResponse.ok(response);
+    }
 
 
 }
