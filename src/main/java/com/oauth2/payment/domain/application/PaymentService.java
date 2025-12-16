@@ -14,6 +14,7 @@ import com.oauth2.payment.domain.port.out.PaymentGateway;
 import com.oauth2.payment.domain.port.out.PaymentCommandRepositoryPort;
 import com.oauth2.payment.domain.port.out.PaymentQueryRepositoryPort;
 import com.oauth2.payment.domain.port.out.dto.GatewayChargeResult;
+import com.oauth2.payment.domain.port.out.dto.GatewayPaymentStatusResult;
 import com.oauth2.payment.domain.port.presentation.dto.PaymentDetailCriteria;
 import com.oauth2.payment.domain.port.presentation.dto.ResyncPaymentStatusCommand;
 import com.oauth2.payment.domain.port.presentation.dto.RetryPaymentCommand;
@@ -129,7 +130,7 @@ public class PaymentService {
                 .orElseThrow(() -> new NotFoundException("결제를 찾을 수 없습니다."));
 
         // ⭐ PG에 "지금 이 결제 상태가 뭐냐" 조회만 한다
-        GatewayPaymentStatusResponse pgStatus = paymentGateway.inquire(payment.getGatewayPaymentId());
+        GatewayPaymentStatusResult pgStatus = paymentGateway.inquire(payment.getGatewayPaymentId());
 
         payment.syncWithGatewayStatus(pgStatus);
 
