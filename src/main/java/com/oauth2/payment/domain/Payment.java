@@ -1,8 +1,10 @@
 package com.oauth2.payment.domain;
 
+import com.oauth2.constants.payment.GatewayPaymentStatus;
 import com.oauth2.constants.payment.PaymentStatus;
 import com.oauth2.payment.domain.infrastructure.persistence.converter.MapToJsonConverter;
 import com.oauth2.payment.domain.port.out.dto.GatewayChargeResult;
+import com.oauth2.payment.domain.port.out.dto.GatewayPaymentStatusResult;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,6 +13,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.*;
 
@@ -55,6 +58,10 @@ public class Payment {
     private String failureMessage;
     private String cancelReason;
     private OffsetDateTime paidAt;
+
+    private String gatewayRawStatus;
+    private Instant gatewayLastSyncedAt;
+
 
     private OffsetDateTime createdAt;
     private String createdBy;
@@ -106,6 +113,87 @@ public class Payment {
             throw new IllegalStateException("현재 상태에서는 결제를 재시도할 수 없습니다. status=" + paymentStatus);
         }
     }
+
+    public void syncWithGatewayStatus(GatewayPaymentStatusResult pg) {
+        validateGatewayId(pg);
+
+        // 관측값 기록
+        this.gatewayRawStatus = pg.rawStatus();
+        this.gatewayLastSyncedAt = Instant.now();
+
+        // PG 상태를 "우리 상태"로 변환
+        PaymentStatus target = mapToPaymentStatus(pg.status());
+
+        // 이미 같은 상태면 부가필드만 최신화/정리하고 끝(멱등)
+        if (this.paymentStatus == target) {
+            normalizeSideFields(target, pg);
+            return;
+        }
+
+        // ✅ PG가 진실: final이든 뭐든 target으로 강제 수렴
+        this.paymentStatus = target;
+
+        // 상태에 맞춰 부가 필드 정리/세팅
+        normalizeSideFields(target, pg);
+    }
+
+    private void validateGatewayId(GatewayPaymentStatusResult pg) {
+        if (!Objects.equals(this.gatewayPaymentId, pg.gatewayPaymentId())) {
+            throw new IllegalArgumentException("gatewayPaymentId mismatch");
+        }
+    }
+
+    private PaymentStatus mapToPaymentStatus(GatewayPaymentStatus s) {
+        return switch (s) {
+            case READY -> PaymentStatus.READY;
+            case IN_PROGRESS -> PaymentStatus.IN_PROGRESS;
+            case APPROVED -> PaymentStatus.PAID;
+            case CANCELED -> PaymentStatus.CANCELED;
+            case FAILED, EXPIRED -> PaymentStatus.FAILED;
+            case UNKNOWN -> this.status; // UNKNOWN이면 상태 변경 안 함(정책)
+        };
+    }
+
+
+    /**
+     * 상태에 따라 paidAt/canceledAt/failureReason 같은 "파생 필드"를 정리
+     * - PG가 진실이므로 이전에 찍혀있던 값이 있어도 target 기준으로 재정렬
+     */
+    private void normalizeSideFields(PaymentStatus target, GatewayPaymentStatusResult pg) {
+        switch (target) {
+            case PAID -> {
+                this.paidAt = (pg.approvedAt() != null) ? pg.approvedAt() : defaultNowIfNull(this.paidAt);
+                this.canceledAt = null;         // 결제완료면 취소시각 제거(단순 모델 기준)
+                this.failureReason = null;
+            }
+            case CANCELED -> {
+                this.canceledAt = (pg.canceledAt() != null) ? pg.canceledAt() : defaultNowIfNull(this.canceledAt);
+                // 취소면 보통 paidAt 유지/삭제 정책이 갈림:
+                // - "승인 후 전체취소" 케이스까지 표현하려면 paidAt 유지가 더 자연스러움.
+                // - 단순 모델이면 null로 비워도 됨.
+                // 여기선 유지(승인됐다가 취소된 흐름을 보존)로 둠.
+                this.failureReason = null;
+            }
+            case FAILED -> {
+                this.failureReason = pg.reason();
+                // 실패는 paid/cancel 시각 제거
+                this.paidAt = null;
+                this.canceledAt = null;
+            }
+            case READY, IN_PROGRESS -> {
+                // 진행중/준비중으로 돌아갈 수도 있으니 관련 필드 정리
+                this.failureReason = null;
+                this.canceledAt = null;
+                // paidAt은 "승인 아님"이므로 제거(정합성 우선)
+                this.paidAt = null;
+            }
+        }
+    }
+
+    private Instant defaultNowIfNull(Instant current) {
+        return (current != null) ? current : Instant.now();
+    }
+
 
 
 }
