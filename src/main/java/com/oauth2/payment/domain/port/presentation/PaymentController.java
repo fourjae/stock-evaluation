@@ -111,7 +111,9 @@ public class PaymentController {
             @PathVariable String paymentKey,
             @AuthenticationPrincipal CustomUserPrincipal user
     ) {
-        PaymentDetailResponse response = paymentService.resyncPaymentStatus(paymentKey);
+        PaymentDetailResponse response = paymentService.resyncPaymentStatus(
+                ResyncPaymentStatusCommand.of(paymentKey, user.getUserId())
+        );
         return ApiResponse.ok(response);
     }
 

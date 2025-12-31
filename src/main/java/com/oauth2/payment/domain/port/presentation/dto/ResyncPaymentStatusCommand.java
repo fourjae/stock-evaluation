@@ -4,8 +4,8 @@ public record ResyncPaymentStatusCommand(
     String paymentKey,
     String userId
 ) {
-    public static RetryPaymentCommand of(String paymentKey, String userId) {
-        return new RetryPaymentCommand(paymentKey, userId);
+    public static ResyncPaymentStatusCommand of(String paymentKey, String userId) {
+        return new ResyncPaymentStatusCommand(paymentKey, userId);
     }
 }
 
